@@ -102,7 +102,7 @@ td{padding:9px 11px;border-bottom:1px solid var(--border);vertical-align:top}
 </div>
 
 <script>
-const BIN_ID   = "69a03c31ae596e708f4bffcc";
+const BIN_ID   = "69a03dff43b1c97be9a03762";
 const API_KEY  = "$2a$10$J3BEcua7ZwaSsQMuXWq3BO7vzsAhV0S.w31QDh7P2RESZWAtJGTDi";
 const PASSWORD = "Welcome1!";
 const BASE     = "https://api.jsonbin.io/v3/b/" + BIN_ID;
@@ -135,7 +135,7 @@ function hideStatus(){ document.getElementById("statusBar").style.display="none"
 async function loadSlots(){
   document.getElementById("main").innerHTML='<div class="empty">Loading appointments…</div>';
   try{
-    const r = await fetch(BASE+"/latest", {headers:HDR});
+    const r = await fetch(BASE+"/latest");
     if(!r.ok){
       const txt = await r.text();
       showStatus("⚠ Could not load data.", "JSONBin error "+r.status+": "+txt, true);
@@ -370,7 +370,7 @@ async function confirmBook(){
   if(!name){errEl.style.display="block";return;}
   errEl.style.display="none";
   try{
-    const r=await fetch(BASE+"/latest",{headers:HDR});
+    const r=await fetch(BASE+"/latest");
     const j=await r.json();
     const fresh=j.record?.slots||[];
     const freshSlot=fresh.find(s=>s.id===pendingId);
