@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Property Viewings</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!--
+╔══════════════════════════════════════════════════════╗
+║           ONE-TIME SETUP (takes ~2 minutes)          ║
+╠══════════════════════════════════════════════════════╣
+║                                                      ║
+║  1. Go to https://jsonbin.io — sign up FREE          ║
+║                                                      ║
+║  2. Click "+ Create Bin"                             ║
+║     Paste:  {"slots":[]}                             ║
+║     Click "Create Bin"                               ║
+║     Copy the BIN ID from the URL bar                 ║
+║     (looks like: 6780abc123...)                      ║
+║                                                      ║
+║  3. Click "API Keys" in the left sidebar             ║
+║     Click "Create Access Key" → copy it              ║
+║                                                      ║
+║  4. Paste both values below and save the file        ║
+║                                                      ║
+╚══════════════════════════════════════════════════════╝
+-->
+
+<script>
+  const BIN_ID   = "699fa1c343b1c97be99eb217";
+  const API_KEY  = "$2a$10$wjn91fCfZpKLpxsEUTWp..n2Jrey3L7Ydm/mrS3w0ErNoGP1pu3D6";
+  const PASSWORD = "Welcome1!";
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f0e8;--card:#fffdf7;--accent:#2d5a3d;--mid:#4a8c60;
+  --light:#e6efe9;--text:#1a1a18;--muted:#7a7a6a;--border:#ddd8cc;
+  --danger:#b83232;--bkbg:#eaf0ec;--bkborder:#a8c8b4;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* SETUP BANNER */
+#setupBanner{background:#fff8e1;border-bottom:2px solid #f0c040;padding:16px 24px;font-size:.88rem;line-height:1.7;display:none}
+#setupBanner strong{color:#7a5000}
+#setupBanner code{background:#fde;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:.85rem}
+#setupBanner a{color:var(--accent)}
+
+/* HEADER */
+.hdr{background:var(--accent);color:#fff;padding:24px 36px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(0,0,0,.18)}
+.hdr h1{font-family:'Lora',serif;font-weight:400;font-size:1.55rem;letter-spacing:.02em}
+.hdr p{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:4px}
+.adminBtn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:6px 18px;font-size:.74rem;font-family:inherit;letter-spacing:.08em;cursor:pointer}
+.adminBtn:hover{background:rgba(255,255,255,.25)}
+
+/* MAIN */
+.main{max-width:900px;margin:0 auto;padding:32px 20px 80px}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:20px;box-shadow:0 1px 10px rgba(0,0,0,.05)}
+
+/* SECTION LABEL */
+.sec{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:16px}
+
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tab{padding:8px 20px;border:none;background:none;font-family:inherit;font-size:.82rem;letter-spacing:.05em;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s}
+.tab.active{color:var(--accent);font-weight:600;border-bottom-color:var(--accent)}
+
+/* FORM */
+.frow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.field.wide{flex:2;min-width:220px}
+label{font-size:.72rem;color:var(--muted);letter-spacing:.05em}
+input[type=text],input[type=date],input[type=time],input[type=number],input[type=email],input[type=password]{
+  padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:.91rem;
+  font-family:inherit;background:#fff;color:var(--text);outline:none;width:100%;transition:border-color .2s}
+input:focus{border-color:var(--mid)}
+.errMsg{color:var(--danger);font-size:.78rem;margin-bottom:10px;display:none}
+.preview{font-size:.76rem;color:var(--muted);margin-left:12px}
+
+/* BUTTONS */
+.btn{padding:9px 20px;border:none;border-radius:8px;font-family:inherit;font-size:.83rem;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:opacity .15s}
+.btn:active{opacity:.8}
+.btn-p{background:var(--accent);color:#fff}
+.btn-s{background:var(--light);color:var(--accent)}
+.btn-d{background:var(--danger);color:#fff}
+.btn-sm{padding:4px 11px;font-size:.7rem}
+.brow{display:flex;gap:10px;align-items:center;margin-top:2px;flex-wrap:wrap}
+
+/* SESSION CARD */
+.shdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px}
+.dtag{display:inline-block;background:var(--light);color:var(--accent);border-radius:99px;padding:2px 11px;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.stitle{font-family:'Lora',serif;font-size:1.1rem;font-weight:600}
+.avail{font-size:.74rem;color:var(--muted);white-space:nowrap;margin-top:4px}
+
+/* SLOT GRID */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px;margin-top:12px}
+.slot{border:1.5px solid var(--mid);border-radius:10px;padding:11px 13px;background:#fff;cursor:pointer;transition:background .13s;position:relative}
+.slot:hover:not(.booked):not(.past){background:var(--light)}
+.slot.booked{border-color:var(--bkborder);background:var(--bkbg);cursor:default}
+.slot.past{border-color:var(--border);background:#f5f3ef;opacity:.5;cursor:default}
+.stime{font-family:'Lora',serif;font-size:.98rem;font-weight:700;color:var(--accent)}
+.send{font-size:.7rem;color:var(--muted);margin-top:2px}
+.sstatus{font-size:.71rem;margin-top:5px;color:var(--muted)}
+.sstatus.avl{color:var(--mid)}
+.sadmin{font-size:.7rem;color:var(--mid);margin-top:3px;font-style:italic}
+.sdel{position:absolute;top:5px;right:5px;background:none;border:none;cursor:pointer;color:var(--danger);font-size:.68rem;opacity:.5;padding:2px 4px;border-radius:4px}
+.sdel:hover{opacity:1}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{text-align:left;padding:8px 11px;background:var(--light);color:var(--accent);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+td{padding:9px 11px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+
+/* EMPTY */
+.empty{text-align:center;color:var(--muted);padding:44px 0;font-style:italic;font-family:'Lora',serif;line-height:1.9}
+
+/* OVERLAY / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(3px)}
+.modal{background:var(--card);border-radius:16px;padding:30px;width:100%;max-width:370px;box-shadow:0 12px 50px rgba(0,0,0,.2);position:relative}
+.mtitle{font-family:'Lora',serif;font-size:1.1rem;margin-bottom:14px}
+.mprop{font-size:.87rem;color:var(--accent);font-weight:600;margin-bottom:3px}
+.msub{font-size:.79rem;color:var(--muted);margin-bottom:18px}
+
+/* SPINNER */
+.spinner{text-align:center;padding:50px;color:var(--muted);font-style:italic}
+
+/* PAST */
+.pastLabel{font-size:.78rem;color:var(--muted);margin-bottom:12px;margin-top:8px;letter-spacing:.06em}
+.faded{opacity:.58}
+
+@media(max-width:580px){
+  .hdr{padding:18px 16px}.card{padding:18px}
+  .sgrid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<div id="setupBanner">
+  ⚠ <strong>Setup needed:</strong> Open this file in a text editor and paste your JSONBin credentials at the top.
+  Go to <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> → sign up free → create a bin with <code>{"slots":[]}</code> → copy the Bin ID and API Key → paste them where it says <code>699fa1c343b1c97be99eb217</code> and <code>$2a$10$wjn91fCfZpKLpxsEUTWp..n2Jrey3L7Ydm/mrS3w0ErNoGP1pu3D6</code>.
+</div>
+
+<div class="hdr">
+  <div>
+    <h1>Property Viewings</h1>
+    <p>Select a slot to book your appointment</p>
+  </div>
+  <button class="adminBtn" id="adminToggle" onclick="toggleAdmin()">⚙ Admin</button>
+</div>
+
+<div class="main" id="main">
+  <div class="spinner">Loading appointments…</div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="overlay" id="bookModal" style="display:none" onclick="if(event.target===this)closeBook()">
+  <div class="modal">
+    <div class="mtitle">Book your appointment</div>
+    <div class="mprop" id="bProp"></div>
+    <div class="msub" id="bSub"></div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Your Full Name *</label>
+      <input type="text" id="bName" placeholder="e.g. Jane Smith"/>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Email (optional)</label>
+      <input type="email" id="bEmail" placeholder="your@email.com"/>
+    </div>
+    <div class="errMsg" id="bErr">Please enter your name.</div>
+    <div class="brow">
+      <button class="btn btn-p" onclick="confirmBook()">Confirm Booking</button>
+      <button class="btn btn-s" onclick="closeBook()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="overlay" id="pinModal" style="display:none" onclick="if(event.target===this)closePinModal()">
+  <div class="modal">
+    <div class="mtitle">Admin Access</div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Password</label>
+      <input type="password" id="pinInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')submitPin()"/>
+    </div>
+    <div class="errMsg" id="pinErr">Incorrect password.</div>
+    <div class="brow" style="margin-top:14px">
+      <button class="btn btn-p" onclick="submitPin()">Enter</button>
+      <button class="btn btn-s" onclick="closePinModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────
+let slots = [];
+let isAdmin = false;
+let adminTab = "sessions";
+let pendingId = null;
+const today = new Date().toISOString().split("T")[0];
+
+// ── JSONBIN ────────────────────────────────────
+const BASE = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const HDR  = {"Content-Type":"application/json","X-Access-Key":API_KEY};
+
+async function loadSlots(){
+  if(BIN_ID==="DISABLED"){
+    document.getElementById("setupBanner").style.display="block";
+    document.getElementById("main").innerHTML="";
+    render(); return;
+  }
+  try{
+    const r=await fetch(BASE+"/latest",{headers:HDR});
+    const j=await r.json();
+    slots=j.record.slots||[];
+  }catch(e){ slots=[]; }
+  render();
+}
+
+async function persist(){
+  if(BIN_ID==="DISABLED") return;
+  await fetch(BASE,{method:"PUT",headers:HDR,body:JSON.stringify({slots})});
+}
+
+// ── HELPERS ────────────────────────────────────
+function fmtTime(t){
+  const [h,m]=t.split(":").map(Number);
+  return `${h%12||12}:${String(m).padStart(2,"0")} ${h>=12?"PM":"AM"}`;
+}
+function addMins(t,mins){
+  const [h,m]=t.split(":").map(Number),tot=h*60+m+mins;
+  return `${String(Math.floor(tot/60)%24).padStart(2,"0")}:${String(tot%60).padStart(2,"0")}`;
+}
+function isPast(date,end){ return new Date(`${date}T${end}`)<new Date(); }
+function fmtDate(d){ return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"}); }
+function fmtDateLong(d){ return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}); }
+
+function genSlots(date,start,end,dur,title){
+  const out=[],key=`${date}__${title}`;
+  let cur=start;
+  while(true){
+    const nxt=addMins(cur,dur);
+    if(nxt>end) break;
+    out.push({id:`${key}__${cur}`,sessionKey:key,date,title,start:cur,end:nxt,bookedBy:null});
+    cur=nxt;
+  }
+  return out;
+}
+
+// ── RENDER ─────────────────────────────────────
+function render(){
+  const main=document.getElementById("main");
+
+  // Group into sessions
+  const map={};
+  for(const s of slots){
+    if(!map[s.sessionKey]) map[s.sessionKey]={date:s.date,title:s.title,key:s.sessionKey,slots:[]};
+    map[s.sessionKey].slots.push(s);
+  }
+  const sessions=Object.values(map).sort((a,b)=>
+    a.date!==b.date?a.date.localeCompare(b.date):a.title.localeCompare(b.title));
+  const future=sessions.filter(s=>s.date>=today);
+  const past=sessions.filter(s=>s.date<today);
+
+  // Booked slots for admin table
+  const booked=slots.filter(s=>s.bookedBy).sort((a,b)=>
+    a.date!==b.date?a.date.localeCompare(b.date):a.title!==b.title?a.title.localeCompare(b.title):a.start.localeCompare(b.start));
+
+  let html="";
+
+  // ── ADMIN PANEL ──
+  if(isAdmin){
+    html+=`<div class="card">
+      <div class="tabs">
+        <button class="tab ${adminTab==="sessions"?"active":""}" onclick="switchTab('sessions')">Create Session</button>
+        <button class="tab ${adminTab==="bookings"?"active":""}" onclick="switchTab('bookings')">Bookings (${booked.length})</button>
+      </div>`;
+
+    if(adminTab==="sessions"){
+      html+=`<div class="sec">New Session</div>
+        <div class="frow">
+          <div class="field wide"><label>Session Title</label>
+            <input type="text" id="fTitle" value="" placeholder="e.g. 14 Maple Street – Property Viewing"/></div>
+          <div class="field"><label>Date</label>
+            <input type="date" id="fDate" min="${today}"/></div>
+        </div>
+        <div class="frow">
+          <div class="field"><label>Start Time</label><input type="time" id="fStart"/></div>
+          <div class="field"><label>End Time</label><input type="time" id="fEnd"/></div>
+          <div class="field"><label>Duration (mins)</label><input type="number" id="fDur" value="30" min="5" max="480"/></div>
+        </div>
+        <div class="errMsg" id="fErr"></div>
+        <div class="brow">
+          <button class="btn btn-p" onclick="createSession()">Generate Slots</button>
+          <span class="preview" id="fPreview"></span>
+        </div>`;
+    }
+
+    if(adminTab==="bookings"){
+      html+=`<div class="sec">Scheduled Appointments</div>`;
+      if(booked.length===0){
+        html+=`<div style="color:var(--muted);font-style:italic;padding:16px 0">No bookings yet.</div>`;
+      } else {
+        html+=`<div style="overflow-x:auto"><table>
+          <thead><tr>
+            <th>Property / Session</th><th>Date</th><th>Time</th>
+            <th>Name</th><th>Email</th><th></th>
+          </tr></thead><tbody>`;
+        for(const sl of booked){
+          const p2=isPast(sl.date,sl.end);
+          html+=`<tr style="background:${p2?"#f9f8f5":"#fff"}">
+            <td><strong>${sl.title}</strong>${p2?` <em style="font-size:.67rem;color:var(--muted)">past</em>`:""}</td>
+            <td>${fmtDate(sl.date)}</td>
+            <td style="white-space:nowrap">${fmtTime(sl.start)} – ${fmtTime(sl.end)}</td>
+            <td>${sl.bookedBy.name}</td>
+            <td style="color:var(--muted)">${sl.bookedBy.email||"—"}</td>
+            <td><button class="btn btn-d btn-sm" onclick="cancelBooking('${sl.id}')">Cancel</button></td>
+          </tr>`;
+        }
+        html+=`</tbody></table></div>`;
+      }
+    }
+
+    html+=`</div>`;
+  }
+
+  // ── SESSIONS ──
+  if(future.length===0 && past.length===0){
+    html+=`<div class="card"><div class="empty">No appointments scheduled yet.<br><small style="font-size:.82rem">Please check back later.</small></div></div>`;
+  } else {
+    for(const sess of future) html+=renderSession(sess,false);
+    if(past.length>0){
+      html+=`<div class="pastLabel">Past sessions (${past.length})</div>`;
+      for(const sess of past) html+=renderSession(sess,true);
+    }
+  }
+
+  main.innerHTML=html;
+
+  // Wire up time preview
+  if(isAdmin && adminTab==="sessions"){
+    ["fStart","fEnd","fDur"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.addEventListener("input",updatePreview);
+    });
+  }
+}
+
+function renderSession(sess,faded){
+  const avail=sess.slots.filter(s=>!s.bookedBy&&!isPast(s.date,s.end)).length;
+  let html=`<div class="card${faded?" faded":""}">
+    <div class="shdr">
+      <div>
+        <div class="dtag">${fmtDate(sess.date)}</div>
+        <div class="stitle">${sess.title}</div>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        ${!faded?`<div class="avail">${avail} of ${sess.slots.length} available</div>`:""}
+        ${isAdmin?`<button class="btn btn-d btn-sm" onclick="deleteSession('${sess.key}')">Delete session</button>`:""}
+      </div>
+    </div>
+    <div class="sgrid">`;
+
+  for(const sl of sess.slots){
+    const bk=!!sl.bookedBy, pa=isPast(sl.date,sl.end);
+    const cls=bk?"slot booked":pa?"slot past":"slot";
+    const click=!bk&&!pa&&!isAdmin?`onclick="openBook('${sl.id}')"` :"";
+    html+=`<div class="${cls}" ${click}>
+      <div class="stime">${fmtTime(sl.start)}</div>
+      <div class="send">to ${fmtTime(sl.end)}</div>`;
+    if(bk){
+      html+=`<div class="sstatus">Not available</div>`;
+      if(isAdmin) html+=`<div class="sadmin">${sl.bookedBy.name}</div>
+        <button class="sdel" onclick="event.stopPropagation();cancelBooking('${sl.id}')" title="Cancel">✕</button>`;
+    } else if(pa){
+      html+=`<div class="sstatus">Expired</div>`;
+    } else {
+      html+=`<div class="sstatus avl">${isAdmin?"Available":"Tap to book →"}</div>`;
+      if(isAdmin) html+=`<button class="sdel" onclick="event.stopPropagation();deleteSlot('${sl.id}')" title="Delete">✕</button>`;
+    }
+    html+=`</div>`;
+  }
+  html+=`</div></div>`;
+  return html;
+}
+
+// ── ADMIN ACTIONS ──────────────────────────────
+function switchTab(tab){ adminTab=tab; render(); }
+
+function updatePreview(){
+  const s=document.getElementById("fStart")?.value;
+  const e=document.getElementById("fEnd")?.value;
+  const d=parseInt(document.getElementById("fDur")?.value);
+  const prev=document.getElementById("fPreview");
+  if(!s||!e||!d||!prev){return;}
+  const [sh,sm]=s.split(":").map(Number),[eh,em]=e.split(":").map(Number);
+  const count=Math.max(0,Math.floor(((eh*60+em)-(sh*60+sm))/d));
+  prev.textContent=count>0?`${count} slot${count!==1?"s":""} will be created`:"";
+}
+
+async function createSession(){
+  const title=document.getElementById("fTitle").value.trim();
+  const date=document.getElementById("fDate").value;
+  const start=document.getElementById("fStart").value;
+  const end=document.getElementById("fEnd").value;
+  const dur=parseInt(document.getElementById("fDur").value);
+  const errEl=document.getElementById("fErr");
+  const err=(m)=>{errEl.textContent=m;errEl.style.display="block";};
+  errEl.style.display="none";
+
+  if(!title) return err("Please enter a session title.");
+  if(!date||!start||!end) return err("Please fill in all fields.");
+  if(end<=start) return err("End time must be after start time.");
+  if(isNaN(dur)||dur<5) return err("Duration must be at least 5 minutes.");
+
+  const newSlots=genSlots(date,start,end,dur,title);
+  if(!newSlots.length) return err("No slots fit. Check times and duration.");
+
+  const key=`${date}__${title}`;
+  slots=[...slots.filter(s=>s.sessionKey!==key),...newSlots]
+    .sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.title!==b.title?a.title.localeCompare(b.title):a.start.localeCompare(b.start));
+  await persist();
+  render();
+}
+
+async function deleteSession(key){
+  if(!confirm("Delete this entire session?")) return;
+  slots=slots.filter(s=>s.sessionKey!==key);
+  await persist(); render();
+}
+
+async function deleteSlot(id){
+  slots=slots.filter(s=>s.id!==id);
+  await persist(); render();
+}
+
+async function cancelBooking(id){
+  slots=slots.map(s=>s.id===id?{...s,bookedBy:null}:s);
+  await persist(); render();
+}
+
+// ── BOOKING ────────────────────────────────────
+function openBook(id){
+  pendingId=id;
+  const sl=slots.find(s=>s.id===id);
+  document.getElementById("bProp").textContent=sl.title;
+  document.getElementById("bSub").textContent=`${fmtDateLong(sl.date)} · ${fmtTime(sl.start)} – ${fmtTime(sl.end)}`;
+  document.getElementById("bName").value="";
+  document.getElementById("bEmail").value="";
+  document.getElementById("bErr").style.display="none";
+  document.getElementById("bookModal").style.display="flex";
+  setTimeout(()=>document.getElementById("bName").focus(),80);
+}
+function closeBook(){ document.getElementById("bookModal").style.display="none"; pendingId=null; }
+
+async function confirmBook(){
+  const name=document.getElementById("bName").value.trim();
+  const email=document.getElementById("bEmail").value.trim();
+  const errEl=document.getElementById("bErr");
+  if(!name){ errEl.style.display="block"; return; }
+  errEl.style.display="none";
+
+  // Re-fetch to prevent double-booking
+  if(BIN_ID!=="DISABLED"){
+    try{
+      const r=await fetch(BASE+"/latest",{headers:HDR});
+      const j=await r.json();
+      const fresh=j.record.slots||[];
+      const freshSlot=fresh.find(s=>s.id===pendingId);
+      if(freshSlot?.bookedBy){
+        errEl.textContent="Sorry, this slot was just taken. Please pick another.";
+        errEl.style.display="block";
+        slots=fresh; closeBook(); render(); return;
+      }
+      slots=fresh;
+    }catch(e){}
+  }
+
+  slots=slots.map(s=>s.id===pendingId?{...s,bookedBy:{name,email}}:s);
+  await persist();
+  closeBook(); render();
+}
+
+// ── ADMIN LOGIN ────────────────────────────────
+function toggleAdmin(){
+  if(isAdmin){ isAdmin=false; document.getElementById("adminToggle").textContent="⚙ Admin"; render(); return; }
+  document.getElementById("pinInput").value="";
+  document.getElementById("pinErr").style.display="none";
+  document.getElementById("pinModal").style.display="flex";
+  setTimeout(()=>document.getElementById("pinInput").focus(),80);
+}
+function closePinModal(){ document.getElementById("pinModal").style.display="none"; }
+function submitPin(){
+  if(document.getElementById("pinInput").value===PASSWORD){
+    isAdmin=true;
+    document.getElementById("adminToggle").textContent="⚙ Admin (exit)";
+    closePinModal(); render();
+  } else {
+    document.getElementById("pinErr").style.display="block";
+    document.getElementById("pinInput").value="";
+  }
+}
+
+// ── INIT ───────────────────────────────────────
+loadSlots();
+</script>
+</body>
+</html>
