@@ -1,358 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Property Viewings – Welcome Home BDS</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
 <style>
-#whb-wrap *,#whb-wrap *::before,#whb-wrap *::after{box-sizing:border-box;margin:0;padding:0}
-#whb-wrap{
-  font-family:'DM Sans',sans-serif;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
   --bg:#f4f0e8;--card:#fffdf7;--accent:#2d5a3d;--mid:#4a8c60;
   --light:#e6efe9;--text:#1a1a18;--muted:#7a7a6a;--border:#ddd8cc;
   --danger:#b83232;--bkbg:#eaf0ec;--bkborder:#a8c8b4;
-  background:var(--bg);color:var(--text);border-radius:12px;overflow:hidden;
 }
-#whb-hdr{background:var(--accent);color:#fff;padding:24px 32px;display:flex;align-items:center;justify-content:space-between;}
-#whb-hdr h2{font-family:'Lora',serif;font-weight:400;font-size:1.5rem;letter-spacing:.02em;color:#fff;margin:0}
-#whb-hdr p{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:4px}
-.whb-adminbtn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:6px 16px;font-size:.74rem;font-family:inherit;letter-spacing:.08em;cursor:pointer}
-#whb-main{max-width:860px;margin:0 auto;padding:28px 20px 60px}
-.whb-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:18px;box-shadow:0 1px 8px rgba(0,0,0,.05)}
-.whb-sec{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:15px}
-.whb-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:18px}
-.whb-tab{padding:7px 18px;border:none;background:none;font-family:inherit;font-size:.81rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px}
-.whb-tab.on{color:var(--accent);font-weight:600;border-bottom-color:var(--accent)}
-.whb-frow{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:11px}
-.whb-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:115px}
-.whb-field.wide{flex:2;min-width:210px}
-.whb-field label{font-size:.71rem;color:var(--muted);letter-spacing:.04em}
-.whb-field input{padding:8px 11px;border:1px solid var(--border);border-radius:7px;font-size:.9rem;font-family:inherit;background:#fff;color:var(--text);outline:none;width:100%}
-.whb-field input:focus{border-color:var(--mid)}
-.whb-err{color:var(--danger);font-size:.77rem;margin-bottom:9px;display:none}
-.whb-btn{padding:9px 20px;border:none;border-radius:7px;font-family:inherit;font-size:.82rem;font-weight:500;cursor:pointer}
-.whb-btn.p{background:var(--accent);color:#fff}
-.whb-btn.s{background:var(--light);color:var(--accent)}
-.whb-btn.d{background:var(--danger);color:#fff}
-.whb-btn.sm{padding:4px 10px;font-size:.69rem}
-.whb-brow{display:flex;gap:9px;align-items:center;margin-top:4px;flex-wrap:wrap}
-.whb-prev{font-size:.75rem;color:var(--muted);margin-left:8px}
-.whb-shdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px}
-.whb-dtag{display:inline-block;background:var(--light);color:var(--accent);border-radius:99px;padding:2px 10px;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
-.whb-stitle{font-family:'Lora',serif;font-size:1.08rem;font-weight:600}
-.whb-avail{font-size:.73rem;color:var(--muted);margin-top:3px}
-.whb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;margin-top:11px}
-.whb-slot{border:1.5px solid var(--mid);border-radius:9px;padding:10px 12px;background:#fff;cursor:pointer;transition:background .13s;position:relative}
-.whb-slot:hover:not(.bk):not(.pa){background:var(--light)}
-.whb-slot.bk{border-color:var(--bkborder);background:var(--bkbg);cursor:default}
-.whb-slot.pa{border-color:var(--border);background:#f5f3ef;opacity:.5;cursor:default}
-.whb-stime{font-family:'Lora',serif;font-size:.96rem;font-weight:700;color:var(--accent)}
-.whb-send{font-size:.69rem;color:var(--muted);margin-top:2px}
-.whb-sstatus{font-size:.7rem;margin-top:5px;color:var(--muted)}
-.whb-sstatus.avl{color:var(--mid)}
-.whb-sadmin{font-size:.69rem;color:var(--mid);margin-top:2px;font-style:italic}
-.whb-sdel{position:absolute;top:4px;right:4px;background:none;border:none;cursor:pointer;color:var(--danger);font-size:.67rem;opacity:.5;padding:2px 4px;border-radius:3px}
-.whb-sdel:hover{opacity:1}
-.whb-empty{text-align:center;color:var(--muted);padding:40px 0;font-style:italic;font-family:'Lora',serif;line-height:1.9}
-.whb-pastlabel{font-size:.76rem;color:var(--muted);margin-bottom:10px;margin-top:6px}
-.whb-faded{opacity:.58}
-table.whb-table{width:100%;border-collapse:collapse;font-size:.81rem}
-table.whb-table th{text-align:left;padding:7px 10px;background:var(--light);color:var(--accent);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
-table.whb-table td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
-/* overlay */
-#whb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(3px);display:none}
-.whb-modal{background:var(--card);border-radius:14px;padding:28px;width:100%;max-width:360px;box-shadow:0 12px 50px rgba(0,0,0,.22)}
-.whb-mtitle{font-family:'Lora',serif;font-size:1.08rem;margin-bottom:12px}
-.whb-mprop{font-size:.86rem;color:var(--accent);font-weight:600;margin-bottom:2px}
-.whb-msub{font-size:.78rem;color:var(--muted);margin-bottom:16px}
-/* toast */
-#whb-toast{position:fixed;bottom:22px;right:22px;background:#2d5a3d;color:#fff;padding:9px 18px;border-radius:8px;font-size:.8rem;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:99999;opacity:0;transition:opacity .3s;pointer-events:none}
-@media(max-width:560px){
-  #whb-hdr{padding:16px}.whb-card{padding:16px}
-  .whb-grid{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))}
-}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.hdr{background:var(--accent);color:#fff;padding:24px 36px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(0,0,0,.18)}
+.hdr h1{font-family:'Lora',serif;font-weight:400;font-size:1.55rem;letter-spacing:.02em}
+.hdr p{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:4px}
+.adminBtn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:6px 18px;font-size:.74rem;font-family:inherit;letter-spacing:.08em;cursor:pointer}
+.adminBtn:hover{background:rgba(255,255,255,.25)}
+.main{max-width:900px;margin:0 auto;padding:32px 20px 80px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:20px;box-shadow:0 1px 10px rgba(0,0,0,.05)}
+.sec{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:16px}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tab{padding:8px 20px;border:none;background:none;font-family:inherit;font-size:.82rem;letter-spacing:.05em;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--accent);font-weight:600;border-bottom-color:var(--accent)}
+.frow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.field.wide{flex:2;min-width:220px}
+label{font-size:.72rem;color:var(--muted);letter-spacing:.05em}
+input[type=text],input[type=date],input[type=time],input[type=number],input[type=email],input[type=password]{
+  padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:.91rem;
+  font-family:inherit;background:#fff;color:var(--text);outline:none;width:100%}
+input:focus{border-color:var(--mid)}
+.errMsg{color:var(--danger);font-size:.78rem;margin-bottom:10px;display:none}
+.btn{padding:9px 20px;border:none;border-radius:8px;font-family:inherit;font-size:.83rem;font-weight:500;letter-spacing:.04em;cursor:pointer}
+.btn-p{background:var(--accent);color:#fff}
+.btn-s{background:var(--light);color:var(--accent)}
+.btn-d{background:var(--danger);color:#fff}
+.btn-sm{padding:4px 11px;font-size:.7rem}
+.brow{display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.prev{font-size:.76rem;color:var(--muted);margin-left:8px}
+.shdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px}
+.dtag{display:inline-block;background:var(--light);color:var(--accent);border-radius:99px;padding:2px 11px;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.stitle{font-family:'Lora',serif;font-size:1.1rem;font-weight:600}
+.avail{font-size:.74rem;color:var(--muted);margin-top:4px}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px;margin-top:12px}
+.slot{border:1.5px solid var(--mid);border-radius:10px;padding:11px 13px;background:#fff;cursor:pointer;transition:background .13s;position:relative}
+.slot:hover:not(.bk):not(.pa){background:var(--light)}
+.slot.bk{border-color:var(--bkborder);background:var(--bkbg);cursor:default}
+.slot.pa{border-color:var(--border);background:#f5f3ef;opacity:.5;cursor:default}
+.stime{font-family:'Lora',serif;font-size:.98rem;font-weight:700;color:var(--accent)}
+.send{font-size:.7rem;color:var(--muted);margin-top:2px}
+.sstatus{font-size:.71rem;margin-top:5px;color:var(--muted)}
+.sstatus.avl{color:var(--mid)}
+.sadmin{font-size:.7rem;color:var(--mid);margin-top:3px;font-style:italic}
+.sdel{position:absolute;top:5px;right:5px;background:none;border:none;cursor:pointer;color:var(--danger);font-size:.68rem;opacity:.5;padding:2px 4px;border-radius:4px}
+.sdel:hover{opacity:1}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{text-align:left;padding:8px 11px;background:var(--light);color:var(--accent);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+td{padding:9px 11px;border-bottom:1px solid var(--border);vertical-align:top}
+.empty{text-align:center;color:var(--muted);padding:44px 0;font-style:italic;font-family:'Lora',serif;line-height:1.9}
+.pastlabel{font-size:.78rem;color:var(--muted);margin-bottom:10px;margin-top:6px}
+.faded{opacity:.58}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(3px)}
+.modal{background:var(--card);border-radius:16px;padding:30px;width:100%;max-width:370px;box-shadow:0 12px 50px rgba(0,0,0,.2)}
+.mtitle{font-family:'Lora',serif;font-size:1.1rem;margin-bottom:12px}
+.mprop{font-size:.87rem;color:var(--accent);font-weight:600;margin-bottom:3px}
+.msub{font-size:.79rem;color:var(--muted);margin-bottom:18px}
+#toast{position:fixed;bottom:22px;right:22px;padding:9px 18px;border-radius:8px;font-size:.82rem;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+#toast.ok{background:#2d5a3d;color:#fff}
+#toast.err{background:#b83232;color:#fff}
+/* status bar */
+#statusBar{background:#fff8e1;border-bottom:2px solid #f0c040;padding:12px 36px;font-size:.83rem;display:none;align-items:center;gap:10px}
+#statusBar.error{background:#fdecea;border-color:#d9534f;color:#7a1010}
+@media(max-width:580px){.hdr{padding:18px 16px}.card{padding:18px}.sgrid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}}
 </style>
+</head>
+<body>
 
-<div id="whb-toast">✓ Saved</div>
-
-<div id="whb-overlay" onclick="if(event.target===this)whbCloseOverlay()">
-  <div class="whb-modal" id="whb-modal-inner"></div>
+<div id="statusBar">
+  <strong id="statusTitle"></strong>
+  <span id="statusMsg"></span>
 </div>
 
-<div id="whb-wrap">
-  <div id="whb-hdr">
-    <div>
-      <h2>Property Viewings</h2>
-      <p>Select a slot to book your appointment</p>
-    </div>
-    <button class="whb-adminbtn" id="whb-adminbtn" onclick="whbToggleAdmin()">⚙ Admin</button>
+<div id="toast"></div>
+
+<div class="hdr">
+  <div>
+    <h1>Property Viewings</h1>
+    <p>Select a slot to book your appointment</p>
   </div>
-  <div id="whb-main"><div class="whb-empty">Loading appointments…</div></div>
+  <button class="adminBtn" id="adminToggle" onclick="toggleAdmin()">⚙ Admin</button>
+</div>
+
+<div class="main" id="main">
+  <div class="empty">Loading appointments…</div>
+</div>
+
+<div class="overlay" id="overlay" style="display:none" onclick="if(event.target===this)closeOverlay()">
+  <div class="modal" id="modalInner"></div>
 </div>
 
 <script>
-(function(){
-  const BIN_ID   = "699fa1c343b1c97be99eb217";
-  const API_KEY  = "$2a$10$wjn91fCfZpKLpxsEUTWp..n2Jrey3L7Ydm/mrS3w0ErNoGP1pu3D6";
-  const PASSWORD = "Welcome1!";
-  const BASE     = "https://api.jsonbin.io/v3/b/" + BIN_ID;
-  const HDR      = {"Content-Type":"application/json","X-Access-Key":API_KEY};
+const BIN_ID   = "699fa1c343b1c97be99eb217";
+const API_KEY  = "$2a$10$J3BEcua7ZwaSsQMuXWq3BO7vzsAhV0S.w31QDh7P2RESZWAtJGTDi";
+const PASSWORD = "Welcome1!";
+const BASE     = "https://api.jsonbin.io/v3/b/" + BIN_ID;
+const HDR      = {
+  "Content-Type": "application/json",
+  "X-Access-Key": API_KEY
+};
 
-  let slots=[], isAdmin=false, adminTab="sessions", pendingId=null;
-  const today=new Date().toISOString().split("T")[0];
+let slots=[], isAdmin=false, adminTab="sessions", pendingId=null;
+const today = new Date().toISOString().split("T")[0];
 
-  // ── API ──
-  async function loadSlots(){
-    try{
-      const r=await fetch(BASE+"/latest",{headers:HDR});
-      const j=await r.json();
-      slots=j.record&&j.record.slots?j.record.slots:[];
-    }catch(e){slots=[];}
-    render();
-  }
-  async function persist(){
-    try{
-      await fetch(BASE,{method:"PUT",headers:HDR,body:JSON.stringify({slots})});
-      showToast();
-    }catch(e){alert("Save failed. Check your internet connection.");}
-  }
+function showToast(msg, isError){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.className=isError?"err":"ok";
+  t.style.opacity="1";
+  setTimeout(()=>t.style.opacity="0", isError?4000:2200);
+}
 
-  // ── HELPERS ──
-  function fmtTime(t){const[h,m]=t.split(":").map(Number);return`${h%12||12}:${String(m).padStart(2,"0")} ${h>=12?"PM":"AM"}`;}
-  function addMins(t,mins){const[h,m]=t.split(":").map(Number),tot=h*60+m+mins;return`${String(Math.floor(tot/60)%24).padStart(2,"0")}:${String(tot%60).padStart(2,"0")}`;}
-  function isPast(date,end){return new Date(`${date}T${end}`)<new Date();}
-  function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"});}
-  function fmtDateLong(d){return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});}
-  function genSlots(date,start,end,dur,title){
-    const out=[],key=`${date}__${title}`;let cur=start;
-    while(true){const nxt=addMins(cur,dur);if(nxt>end)break;
-      out.push({id:`${key}__${cur}`,sessionKey:key,date,title,start:cur,end:nxt,bookedBy:null});cur=nxt;}
-    return out;
-  }
-  function showToast(){
-    const t=document.getElementById("whb-toast");
-    t.style.opacity="1";setTimeout(()=>t.style.opacity="0",2200);
-  }
+function showStatus(title, msg, isError){
+  const bar=document.getElementById("statusBar");
+  document.getElementById("statusTitle").textContent=title+" ";
+  document.getElementById("statusMsg").textContent=msg;
+  bar.className=isError?"error":"";
+  bar.style.display="flex";
+}
 
-  // ── RENDER ──
-  function render(){
-    const map={};
-    for(const s of slots){
-      if(!map[s.sessionKey])map[s.sessionKey]={date:s.date,title:s.title,key:s.sessionKey,slots:[]};
-      map[s.sessionKey].slots.push(s);
+function hideStatus(){ document.getElementById("statusBar").style.display="none"; }
+
+async function loadSlots(){
+  document.getElementById("main").innerHTML='<div class="empty">Loading appointments…</div>';
+  try{
+    const r = await fetch(BASE+"/latest", {headers:HDR});
+    if(!r.ok){
+      const txt = await r.text();
+      showStatus("⚠ Could not load data.", "JSONBin error "+r.status+": "+txt, true);
+      slots=[];
+    } else {
+      const j = await r.json();
+      slots = j.record?.slots || [];
+      hideStatus();
     }
-    const sessions=Object.values(map).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.title.localeCompare(b.title));
-    const future=sessions.filter(s=>s.date>=today);
-    const past=sessions.filter(s=>s.date<today);
-    const booked=slots.filter(s=>s.bookedBy).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.title!==b.title?a.title.localeCompare(b.title):a.start.localeCompare(b.start));
-
-    let html="";
-
-    if(isAdmin){
-      html+=`<div class="whb-card">
-        <div class="whb-tabs">
-          <button class="whb-tab ${adminTab==="sessions"?"on":""}" onclick="whbSwitchTab('sessions')">Create Session</button>
-          <button class="whb-tab ${adminTab==="bookings"?"on":""}" onclick="whbSwitchTab('bookings')">Bookings (${booked.length})</button>
-        </div>`;
-
-      if(adminTab==="sessions"){
-        html+=`<div class="whb-sec">New Session</div>
-          <div class="whb-frow">
-            <div class="whb-field wide"><label>Session Title</label>
-              <input type="text" id="whb-fTitle" placeholder="e.g. 14 Maple Street – Property Viewing"/></div>
-            <div class="whb-field"><label>Date</label>
-              <input type="date" id="whb-fDate" min="${today}"/></div>
-          </div>
-          <div class="whb-frow">
-            <div class="whb-field"><label>Start Time</label><input type="time" id="whb-fStart"/></div>
-            <div class="whb-field"><label>End Time</label><input type="time" id="whb-fEnd"/></div>
-            <div class="whb-field"><label>Duration (mins)</label><input type="number" id="whb-fDur" value="30" min="5" max="480"/></div>
-          </div>
-          <div class="whb-err" id="whb-fErr"></div>
-          <div class="whb-brow">
-            <button class="whb-btn p" onclick="whbCreateSession()">Generate Slots</button>
-            <span class="whb-prev" id="whb-fPrev"></span>
-          </div>`;
-        setTimeout(()=>{
-          ["whb-fStart","whb-fEnd","whb-fDur"].forEach(id=>{
-            const el=document.getElementById(id);
-            if(el)el.addEventListener("input",whbUpdatePreview);
-          });
-        },50);
-      }
-
-      if(adminTab==="bookings"){
-        html+=`<div class="whb-sec">Scheduled Appointments</div>`;
-        if(!booked.length){
-          html+=`<div style="color:var(--muted);font-style:italic;padding:14px 0">No bookings yet.</div>`;
-        }else{
-          html+=`<div style="overflow-x:auto"><table class="whb-table"><thead><tr>
-            <th>Property / Session</th><th>Date</th><th>Time</th><th>Name</th><th>Email</th><th></th>
-          </tr></thead><tbody>`;
-          for(const sl of booked){
-            const pa=isPast(sl.date,sl.end);
-            html+=`<tr style="background:${pa?"#f9f8f5":"#fff"}">
-              <td><strong>${sl.title}</strong>${pa?` <em style="font-size:.66rem;color:var(--muted)">past</em>`:""}</td>
-              <td>${fmtDate(sl.date)}</td>
-              <td style="white-space:nowrap">${fmtTime(sl.start)} – ${fmtTime(sl.end)}</td>
-              <td>${sl.bookedBy.name}</td>
-              <td style="color:var(--muted)">${sl.bookedBy.email||"—"}</td>
-              <td><button class="whb-btn d sm" onclick="whbCancelBooking('${sl.id}')">Cancel</button></td>
-            </tr>`;
-          }
-          html+=`</tbody></table></div>`;
-        }
-      }
-      html+=`</div>`;
-    }
-
-    if(!future.length&&!past.length){
-      html+=`<div class="whb-card"><div class="whb-empty">No appointments scheduled yet.<br><small style="font-size:.8rem">Please check back later.</small></div></div>`;
-    }else{
-      for(const s of future)html+=renderSess(s,false);
-      if(past.length){
-        html+=`<div class="whb-pastlabel">Past sessions (${past.length})</div>`;
-        for(const s of past)html+=renderSess(s,true);
-      }
-    }
-    document.getElementById("whb-main").innerHTML=html;
+  } catch(e){
+    showStatus("⚠ Connection failed.", "Could not reach JSONBin. Check your internet. ("+e.message+")", true);
+    slots=[];
   }
+  render();
+}
 
-  function renderSess(sess,faded){
-    const avail=sess.slots.filter(s=>!s.bookedBy&&!isPast(s.date,s.end)).length;
-    let h=`<div class="whb-card${faded?" whb-faded":""}">
-      <div class="whb-shdr">
-        <div><div class="whb-dtag">${fmtDate(sess.date)}</div><div class="whb-stitle">${sess.title}</div></div>
-        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px">
-          ${!faded?`<div class="whb-avail">${avail} of ${sess.slots.length} available</div>`:""}
-          ${isAdmin?`<button class="whb-btn d sm" onclick="whbDeleteSession('${sess.key}')">Delete session</button>`:""}
+async function persist(){
+  try{
+    const r = await fetch(BASE, {
+      method:"PUT",
+      headers:HDR,
+      body:JSON.stringify({slots})
+    });
+    if(!r.ok){
+      const txt = await r.text();
+      showToast("❌ Save failed: "+r.status+" "+txt, true);
+      return false;
+    }
+    showToast("✓ Saved", false);
+    return true;
+  } catch(e){
+    showToast("❌ Save failed: "+e.message, true);
+    return false;
+  }
+}
+
+function fmtTime(t){const[h,m]=t.split(":").map(Number);return`${h%12||12}:${String(m).padStart(2,"0")} ${h>=12?"PM":"AM"}`;}
+function addMins(t,m){const[h,mm]=t.split(":").map(Number),tot=h*60+mm+m;return`${String(Math.floor(tot/60)%24).padStart(2,"0")}:${String(tot%60).padStart(2,"0")}`;}
+function isPast(d,e){return new Date(`${d}T${e}`)<new Date();}
+function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"});}
+function fmtDateLong(d){return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});}
+
+function genSlots(date,start,end,dur,title){
+  const out=[],key=`${date}__${title}`;let cur=start;
+  while(true){const nxt=addMins(cur,dur);if(nxt>end)break;
+    out.push({id:`${key}__${cur}`,sessionKey:key,date,title,start:cur,end:nxt,bookedBy:null});cur=nxt;}
+  return out;
+}
+
+function render(){
+  const map={};
+  for(const s of slots){
+    if(!map[s.sessionKey])map[s.sessionKey]={date:s.date,title:s.title,key:s.sessionKey,slots:[]};
+    map[s.sessionKey].slots.push(s);
+  }
+  const sessions=Object.values(map).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.title.localeCompare(b.title));
+  const future=sessions.filter(s=>s.date>=today);
+  const past=sessions.filter(s=>s.date<today);
+  const booked=slots.filter(s=>s.bookedBy).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.title!==b.title?a.title.localeCompare(b.title):a.start.localeCompare(b.start));
+
+  let html="";
+
+  if(isAdmin){
+    html+=`<div class="card">
+      <div class="tabs">
+        <button class="tab ${adminTab==="sessions"?"on":""}" onclick="switchTab('sessions')">Create Session</button>
+        <button class="tab ${adminTab==="bookings"?"on":""}" onclick="switchTab('bookings')">Bookings (${booked.length})</button>
+      </div>`;
+    if(adminTab==="sessions"){
+      html+=`<div class="sec">New Session</div>
+        <div class="frow">
+          <div class="field wide"><label>Session Title</label>
+            <input type="text" id="fTitle" placeholder="e.g. 14 Maple Street – Property Viewing"/></div>
+          <div class="field"><label>Date</label><input type="date" id="fDate" min="${today}"/></div>
         </div>
-      </div><div class="whb-grid">`;
-    for(const sl of sess.slots){
-      const bk=!!sl.bookedBy,pa=isPast(sl.date,sl.end);
-      const cls=bk?"whb-slot bk":pa?"whb-slot pa":"whb-slot";
-      const clk=!bk&&!pa&&!isAdmin?`onclick="whbOpenBook('${sl.id}')"` :"";
-      h+=`<div class="${cls}" ${clk}>
-        <div class="whb-stime">${fmtTime(sl.start)}</div>
-        <div class="whb-send">to ${fmtTime(sl.end)}</div>`;
-      if(bk){
-        h+=`<div class="whb-sstatus">Not available</div>`;
-        if(isAdmin)h+=`<div class="whb-sadmin">${sl.bookedBy.name}</div><button class="whb-sdel" onclick="event.stopPropagation();whbCancelBooking('${sl.id}')">✕</button>`;
-      }else if(pa){h+=`<div class="whb-sstatus">Expired</div>`;}
-      else{h+=`<div class="whb-sstatus avl">${isAdmin?"Available":"Tap to book →"}</div>`;
-        if(isAdmin)h+=`<button class="whb-sdel" onclick="event.stopPropagation();whbDeleteSlot('${sl.id}')">✕</button>`;}
-      h+=`</div>`;
+        <div class="frow">
+          <div class="field"><label>Start Time</label><input type="time" id="fStart"/></div>
+          <div class="field"><label>End Time</label><input type="time" id="fEnd"/></div>
+          <div class="field"><label>Duration (mins)</label><input type="number" id="fDur" value="30" min="5" max="480"/></div>
+        </div>
+        <div class="errMsg" id="fErr"></div>
+        <div class="brow">
+          <button class="btn btn-p" onclick="createSession()">Generate Slots</button>
+          <span class="prev" id="fPrev"></span>
+        </div>`;
+      setTimeout(()=>{
+        ["fStart","fEnd","fDur"].forEach(id=>{
+          document.getElementById(id)?.addEventListener("input",updatePreview);
+        });
+      },50);
     }
-    h+=`</div></div>`;return h;
-  }
-
-  // ── SESSION ACTIONS ──
-  window.whbSwitchTab=function(tab){adminTab=tab;render();}
-  window.whbUpdatePreview=function(){
-    const s=document.getElementById("whb-fStart")?.value;
-    const e=document.getElementById("whb-fEnd")?.value;
-    const d=parseInt(document.getElementById("whb-fDur")?.value);
-    const pr=document.getElementById("whb-fPrev");
-    if(!s||!e||!d||!pr)return;
-    const[sh,sm]=s.split(":").map(Number),[eh,em]=e.split(":").map(Number);
-    const c=Math.max(0,Math.floor(((eh*60+em)-(sh*60+sm))/d));
-    pr.textContent=c>0?`${c} slot${c!==1?"s":""} will be created`:"";
-  }
-  window.whbCreateSession=async function(){
-    const title=document.getElementById("whb-fTitle").value.trim();
-    const date=document.getElementById("whb-fDate").value;
-    const start=document.getElementById("whb-fStart").value;
-    const end=document.getElementById("whb-fEnd").value;
-    const dur=parseInt(document.getElementById("whb-fDur").value);
-    const errEl=document.getElementById("whb-fErr");
-    const err=m=>{errEl.textContent=m;errEl.style.display="block";};
-    errEl.style.display="none";
-    if(!title)return err("Please enter a session title.");
-    if(!date||!start||!end)return err("Please fill in all fields.");
-    if(end<=start)return err("End time must be after start time.");
-    if(isNaN(dur)||dur<5)return err("Duration must be at least 5 minutes.");
-    const ns=genSlots(date,start,end,dur,title);
-    if(!ns.length)return err("No slots fit. Check times and duration.");
-    const key=`${date}__${title}`;
-    slots=[...slots.filter(s=>s.sessionKey!==key),...ns]
-      .sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.title!==b.title?a.title.localeCompare(b.title):a.start.localeCompare(b.start));
-    await persist();render();
-  }
-  window.whbDeleteSession=async function(key){
-    if(!confirm("Delete this entire session?"))return;
-    slots=slots.filter(s=>s.sessionKey!==key);await persist();render();
-  }
-  window.whbDeleteSlot=async function(id){
-    slots=slots.filter(s=>s.id!==id);await persist();render();
-  }
-  window.whbCancelBooking=async function(id){
-    slots=slots.map(s=>s.id===id?{...s,bookedBy:null}:s);await persist();render();
-  }
-
-  // ── BOOKING ──
-  window.whbOpenBook=function(id){
-    pendingId=id;
-    const sl=slots.find(s=>s.id===id);
-    document.getElementById("whb-modal-inner").innerHTML=`
-      <div class="whb-mtitle">Book your appointment</div>
-      <div class="whb-mprop">${sl.title}</div>
-      <div class="whb-msub">${fmtDateLong(sl.date)} · ${fmtTime(sl.start)} – ${fmtTime(sl.end)}</div>
-      <div class="whb-field" style="margin-bottom:11px"><label>Your Full Name *</label>
-        <input type="text" id="whb-bName" placeholder="Full name"/></div>
-      <div class="whb-field" style="margin-bottom:14px"><label>Email (optional)</label>
-        <input type="email" id="whb-bEmail" placeholder="your@email.com"/></div>
-      <div class="whb-err" id="whb-bErr">Please enter your name.</div>
-      <div class="whb-brow">
-        <button class="whb-btn p" onclick="whbConfirmBook()">Confirm Booking</button>
-        <button class="whb-btn s" onclick="whbCloseOverlay()">Cancel</button>
-      </div>`;
-    document.getElementById("whb-overlay").style.display="flex";
-    setTimeout(()=>document.getElementById("whb-bName")?.focus(),80);
-  }
-  window.whbConfirmBook=async function(){
-    const name=document.getElementById("whb-bName").value.trim();
-    const email=document.getElementById("whb-bEmail").value.trim();
-    const errEl=document.getElementById("whb-bErr");
-    if(!name){errEl.style.display="block";return;}
-    errEl.style.display="none";
-    // Re-fetch to prevent double booking
-    try{
-      const r=await fetch(BASE+"/latest",{headers:HDR});
-      const j=await r.json();
-      const fresh=j.record?.slots||[];
-      const freshSlot=fresh.find(s=>s.id===pendingId);
-      if(freshSlot?.bookedBy){
-        alert("Sorry, this slot was just taken. Please choose another.");
-        slots=fresh;whbCloseOverlay();render();return;
+    if(adminTab==="bookings"){
+      html+=`<div class="sec">Scheduled Appointments</div>`;
+      if(!booked.length){
+        html+=`<div style="color:var(--muted);font-style:italic;padding:16px 0">No bookings yet.</div>`;
+      }else{
+        html+=`<div style="overflow-x:auto"><table><thead><tr>
+          <th>Property / Session</th><th>Date</th><th>Time</th><th>Name</th><th>Email</th><th></th>
+        </tr></thead><tbody>`;
+        for(const sl of booked){
+          const pa=isPast(sl.date,sl.end);
+          html+=`<tr style="background:${pa?"#f9f8f5":"#fff"}">
+            <td><strong>${sl.title}</strong>${pa?` <em style="font-size:.67rem;color:var(--muted)">past</em>`:""}</td>
+            <td>${fmtDate(sl.date)}</td>
+            <td style="white-space:nowrap">${fmtTime(sl.start)} – ${fmtTime(sl.end)}</td>
+            <td>${sl.bookedBy.name}</td>
+            <td style="color:var(--muted)">${sl.bookedBy.email||"—"}</td>
+            <td><button class="btn btn-d btn-sm" onclick="cancelBooking('${sl.id}')">Cancel</button></td>
+          </tr>`;
+        }
+        html+=`</tbody></table></div>`;
       }
-      slots=fresh;
-    }catch(e){}
-    slots=slots.map(s=>s.id===pendingId?{...s,bookedBy:{name,email}}:s);
-    await persist();whbCloseOverlay();render();
+    }
+    html+=`</div>`;
   }
 
-  // ── ADMIN LOGIN ──
-  window.whbToggleAdmin=function(){
-    if(isAdmin){isAdmin=false;document.getElementById("whb-adminbtn").textContent="⚙ Admin";render();return;}
-    document.getElementById("whb-modal-inner").innerHTML=`
-      <div class="whb-mtitle">Admin Access</div>
-      <div class="whb-field" style="margin-bottom:10px"><label>Password</label>
-        <input type="password" id="whb-pinInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')whbSubmitPin()"/></div>
-      <div class="whb-err" id="whb-pinErr">Incorrect password.</div>
-      <div class="whb-brow" style="margin-top:12px">
-        <button class="whb-btn p" onclick="whbSubmitPin()">Enter</button>
-        <button class="whb-btn s" onclick="whbCloseOverlay()">Cancel</button>
-      </div>`;
-    document.getElementById("whb-overlay").style.display="flex";
-    setTimeout(()=>document.getElementById("whb-pinInput")?.focus(),80);
-  }
-  window.whbSubmitPin=function(){
-    if(document.getElementById("whb-pinInput").value===PASSWORD){
-      isAdmin=true;document.getElementById("whb-adminbtn").textContent="⚙ Admin (exit)";
-      whbCloseOverlay();render();
-    }else{
-      document.getElementById("whb-pinErr").style.display="block";
-      document.getElementById("whb-pinInput").value="";
+  if(!future.length&&!past.length){
+    html+=`<div class="card"><div class="empty">No appointments scheduled yet.<br><small style="font-size:.82rem">Please check back later.</small></div></div>`;
+  }else{
+    for(const s of future)html+=renderSess(s,false);
+    if(past.length){
+      html+=`<div class="pastlabel">Past sessions (${past.length})</div>`;
+      for(const s of past)html+=renderSess(s,true);
     }
   }
-  window.whbCloseOverlay=function(){document.getElementById("whb-overlay").style.display="none";}
+  document.getElementById("main").innerHTML=html;
+}
 
-  loadSlots();
-})();
+function renderSess(sess,faded){
+  const avail=sess.slots.filter(s=>!s.bookedBy&&!isPast(s.date,s.end)).length;
+  let h=`<div class="card${faded?" faded":""}">
+    <div class="shdr">
+      <div><div class="dtag">${fmtDate(sess.date)}</div><div class="stitle">${sess.title}</div></div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+        ${!faded?`<div class="avail">${avail} of ${sess.slots.length} available</div>`:""}
+        ${isAdmin?`<button class="btn btn-d btn-sm" onclick="deleteSession('${sess.key}')">Delete session</button>`:""}
+      </div>
+    </div><div class="sgrid">`;
+  for(const sl of sess.slots){
+    const bk=!!sl.bookedBy,pa=isPast(sl.date,sl.end);
+    const cls=bk?"slot bk":pa?"slot pa":"slot";
+    const clk=!bk&&!pa&&!isAdmin?`onclick="openBook('${sl.id}')"` :"";
+    h+=`<div class="${cls}" ${clk}>
+      <div class="stime">${fmtTime(sl.start)}</div>
+      <div class="send">to ${fmtTime(sl.end)}</div>`;
+    if(bk){
+      h+=`<div class="sstatus">Not available</div>`;
+      if(isAdmin)h+=`<div class="sadmin">${sl.bookedBy.name}</div><button class="sdel" onclick="event.stopPropagation();cancelBooking('${sl.id}')">✕</button>`;
+    }else if(pa){h+=`<div class="sstatus">Expired</div>`;}
+    else{
+      h+=`<div class="sstatus avl">${isAdmin?"Available":"Tap to book →"}</div>`;
+      if(isAdmin)h+=`<button class="sdel" onclick="event.stopPropagation();deleteSlot('${sl.id}')">✕</button>`;
+    }
+    h+=`</div>`;
+  }
+  return h+`</div></div>`;
+}
+
+function updatePreview(){
+  const s=document.getElementById("fStart")?.value;
+  const e=document.getElementById("fEnd")?.value;
+  const d=parseInt(document.getElementById("fDur")?.value);
+  const pr=document.getElementById("fPrev");
+  if(!s||!e||!d||!pr)return;
+  const[sh,sm]=s.split(":").map(Number),[eh,em]=e.split(":").map(Number);
+  const c=Math.max(0,Math.floor(((eh*60+em)-(sh*60+sm))/d));
+  pr.textContent=c>0?`${c} slot${c!==1?"s":""} will be created`:"";
+}
+
+function switchTab(tab){adminTab=tab;render();}
+
+async function createSession(){
+  const title=document.getElementById("fTitle").value.trim();
+  const date=document.getElementById("fDate").value;
+  const start=document.getElementById("fStart").value;
+  const end=document.getElementById("fEnd").value;
+  const dur=parseInt(document.getElementById("fDur").value);
+  const errEl=document.getElementById("fErr");
+  const err=m=>{errEl.textContent=m;errEl.style.display="block";};
+  errEl.style.display="none";
+  if(!title)return err("Please enter a session title.");
+  if(!date||!start||!end)return err("Please fill in all fields.");
+  if(end<=start)return err("End time must be after start time.");
+  if(isNaN(dur)||dur<5)return err("Duration must be at least 5 minutes.");
+  const ns=genSlots(date,start,end,dur,title);
+  if(!ns.length)return err("No slots fit. Check times and duration.");
+  const key=`${date}__${title}`;
+  slots=[...slots.filter(s=>s.sessionKey!==key),...ns]
+    .sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.title!==b.title?a.title.localeCompare(b.title):a.start.localeCompare(b.start));
+  const ok = await persist();
+  if(ok) render();
+}
+
+async function deleteSession(key){
+  if(!confirm("Delete this entire session?"))return;
+  slots=slots.filter(s=>s.sessionKey!==key);
+  const ok=await persist();if(ok)render();
+}
+async function deleteSlot(id){
+  slots=slots.filter(s=>s.id!==id);
+  const ok=await persist();if(ok)render();
+}
+async function cancelBooking(id){
+  slots=slots.map(s=>s.id===id?{...s,bookedBy:null}:s);
+  const ok=await persist();if(ok)render();
+}
+
+function openBook(id){
+  pendingId=id;
+  const sl=slots.find(s=>s.id===id);
+  document.getElementById("modalInner").innerHTML=`
+    <div class="mtitle">Book your appointment</div>
+    <div class="mprop">${sl.title}</div>
+    <div class="msub">${fmtDateLong(sl.date)} · ${fmtTime(sl.start)} – ${fmtTime(sl.end)}</div>
+    <div class="field" style="margin-bottom:11px"><label>Your Full Name *</label>
+      <input type="text" id="bName" placeholder="Full name"/></div>
+    <div class="field" style="margin-bottom:14px"><label>Email (optional)</label>
+      <input type="email" id="bEmail" placeholder="your@email.com"/></div>
+    <div class="errMsg" id="bErr">Please enter your name.</div>
+    <div class="brow">
+      <button class="btn btn-p" onclick="confirmBook()">Confirm Booking</button>
+      <button class="btn btn-s" onclick="closeOverlay()">Cancel</button>
+    </div>`;
+  document.getElementById("overlay").style.display="flex";
+  setTimeout(()=>document.getElementById("bName")?.focus(),80);
+}
+
+async function confirmBook(){
+  const name=document.getElementById("bName").value.trim();
+  const email=document.getElementById("bEmail").value.trim();
+  const errEl=document.getElementById("bErr");
+  if(!name){errEl.style.display="block";return;}
+  errEl.style.display="none";
+  try{
+    const r=await fetch(BASE+"/latest",{headers:HDR});
+    const j=await r.json();
+    const fresh=j.record?.slots||[];
+    const freshSlot=fresh.find(s=>s.id===pendingId);
+    if(freshSlot?.bookedBy){
+      alert("Sorry, this slot was just taken. Please choose another.");
+      slots=fresh;closeOverlay();render();return;
+    }
+    slots=fresh;
+  }catch(e){}
+  slots=slots.map(s=>s.id===pendingId?{...s,bookedBy:{name,email}}:s);
+  const ok=await persist();
+  if(ok){closeOverlay();render();}
+}
+
+function toggleAdmin(){
+  if(isAdmin){isAdmin=false;document.getElementById("adminToggle").textContent="⚙ Admin";render();return;}
+  document.getElementById("modalInner").innerHTML=`
+    <div class="mtitle">Admin Access</div>
+    <div class="field" style="margin-bottom:10px"><label>Password</label>
+      <input type="password" id="pinInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')submitPin()"/></div>
+    <div class="errMsg" id="pinErr">Incorrect password.</div>
+    <div class="brow" style="margin-top:12px">
+      <button class="btn btn-p" onclick="submitPin()">Enter</button>
+      <button class="btn btn-s" onclick="closeOverlay()">Cancel</button>
+    </div>`;
+  document.getElementById("overlay").style.display="flex";
+  setTimeout(()=>document.getElementById("pinInput")?.focus(),80);
+}
+
+function submitPin(){
+  if(document.getElementById("pinInput").value===PASSWORD){
+    isAdmin=true;document.getElementById("adminToggle").textContent="⚙ Admin (exit)";
+    closeOverlay();render();
+  }else{
+    document.getElementById("pinErr").style.display="block";
+    document.getElementById("pinInput").value="";
+  }
+}
+
+function closeOverlay(){document.getElementById("overlay").style.display="none";}
+
+loadSlots();
 </script>
+</body>
+</html>
