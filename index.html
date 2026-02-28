@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Property Viewings – Welcome Home BDS</title>
+<title>Property Viewings – Welcome Home BDA</title>
+<meta name="description" content="Book a property viewing slot with Welcome Home BDA"/>
+<meta property="og:title" content="Property Viewings – Welcome Home BDA"/>
+<meta property="og:description" content="Book a property viewing slot with Welcome Home BDA"/>
+<meta property="og:type" content="website"/>
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -271,7 +275,10 @@ function renderSess(sess,faded){
       <div><div class="dtag">${fmtDate(sess.date)}</div><div class="stitle">${sess.title}</div></div>
       <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px">
         ${!faded?`<div class="avail">${avail} of ${sess.slots.length} available</div>`:""}
-        ${isAdmin?`<button class="btn btn-d btn-sm" onclick="deleteSession('${sess.key}')">Delete session</button>`:""}
+        ${isAdmin?`<div style="display:flex;gap:6px;justify-content:flex-end">
+          <button class="btn btn-s btn-sm" onclick="editSession('${sess.key}')">✏ Edit</button>
+          <button class="btn btn-d btn-sm" onclick="deleteSession('${sess.key}')">Delete</button>
+        </div>`:""}
       </div>
     </div><div class="sgrid">`;
   for(const sl of sess.slots){
@@ -333,6 +340,68 @@ async function deleteSession(key){
   if(!confirm("Delete this entire session?"))return;
   slots=slots.filter(s=>s.sessionKey!==key);
   const ok=await persist();if(ok)render();
+}
+
+function editSession(key){
+  const sess=slots.filter(s=>s.sessionKey===key);
+  if(!sess.length)return;
+  const {date,title}=sess[0];
+  // Work out current start, end, duration from slots
+  const sorted=sess.slice().sort((a,b)=>a.start.localeCompare(b.start));
+  const start=sorted[0].start;
+  const end=sorted[sorted.length-1].end;
+  const dur=sorted.length>1
+    ? (()=>{const[h1,m1]=sorted[0].start.split(":").map(Number),[h2,m2]=sorted[0].end.split(":").map(Number);return(h2*60+m2)-(h1*60+m1);})()
+    : (()=>{const[h1,m1]=sorted[0].start.split(":").map(Number),[h2,m2]=sorted[0].end.split(":").map(Number);return(h2*60+m2)-(h1*60+m1);})();
+
+  document.getElementById("modalInner").innerHTML=`
+    <div class="mtitle">Edit Session</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:16px">Existing bookings will be kept if the time slot still exists after editing.</div>
+    <div class="frow">
+      <div class="field wide"><label>Session Title</label>
+        <input type="text" id="eTitle" value="${title}"/></div>
+      <div class="field"><label>Date</label>
+        <input type="date" id="eDate" value="${date}" min="${today}"/></div>
+    </div>
+    <div class="frow">
+      <div class="field"><label>Start Time</label><input type="time" id="eStart" value="${start}"/></div>
+      <div class="field"><label>End Time</label><input type="time" id="eEnd" value="${end}"/></div>
+      <div class="field"><label>Duration (mins)</label><input type="number" id="eDur" value="${dur}" min="5" max="480"/></div>
+    </div>
+    <div class="errMsg" id="eErr"></div>
+    <div class="brow" style="margin-top:6px">
+      <button class="btn btn-p" onclick="saveEdit('${key}')">Save Changes</button>
+      <button class="btn btn-s" onclick="closeOverlay()">Cancel</button>
+    </div>`;
+  document.getElementById("overlay").style.display="flex";
+}
+
+async function saveEdit(oldKey){
+  const title=document.getElementById("eTitle").value.trim();
+  const date=document.getElementById("eDate").value;
+  const start=document.getElementById("eStart").value;
+  const end=document.getElementById("eEnd").value;
+  const dur=parseInt(document.getElementById("eDur").value);
+  const errEl=document.getElementById("eErr");
+  const err=m=>{errEl.textContent=m;errEl.style.display="block";};
+  errEl.style.display="none";
+  if(!title)return err("Please enter a session title.");
+  if(!date||!start||!end)return err("Please fill in all fields.");
+  if(end<=start)return err("End time must be after start time.");
+  if(isNaN(dur)||dur<5)return err("Duration must be at least 5 minutes.");
+  const newSlots=genSlots(date,start,end,dur,title);
+  if(!newSlots.length)return err("No slots fit. Check times and duration.");
+  // Preserve bookings where the slot time still exists
+  const oldBooked=slots.filter(s=>s.sessionKey===oldKey&&s.bookedBy);
+  const merged=newSlots.map(ns=>{
+    const existing=oldBooked.find(ob=>ob.start===ns.start&&ob.end===ns.end);
+    return existing?{...ns,bookedBy:existing.bookedBy}:ns;
+  });
+  const newKey=`${date}__${title}`;
+  slots=[...slots.filter(s=>s.sessionKey!==oldKey),...merged]
+    .sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.title!==b.title?a.title.localeCompare(b.title):a.start.localeCompare(b.start));
+  const ok=await persist();
+  if(ok){closeOverlay();render();}
 }
 async function deleteSlot(id){
   slots=slots.filter(s=>s.id!==id);
