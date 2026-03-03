@@ -178,7 +178,12 @@ async function persist(){
 
 function fmtTime(t){const[h,m]=t.split(":").map(Number);return`${h%12||12}:${String(m).padStart(2,"0")} ${h>=12?"PM":"AM"}`;}
 function addMins(t,m){const[h,mm]=t.split(":").map(Number),tot=h*60+mm+m;return`${String(Math.floor(tot/60)%24).padStart(2,"0")}:${String(tot%60).padStart(2,"0")}`;}
-function isPast(d,e){return new Date(`${d}T${e}`)<new Date();}
+function isPast(d,e){
+  // Compare using Bermuda time (Atlantic/Bermuda)
+  const nowBermuda = new Date(new Date().toLocaleString("en-US", {timeZone:"Atlantic/Bermuda"}));
+  const slotEnd = new Date(new Date(`${d}T${e}`).toLocaleString("en-US", {timeZone:"Atlantic/Bermuda"}));
+  return slotEnd < nowBermuda;
+}
 function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"});}
 function fmtDateLong(d){return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});}
 
